@@ -1,0 +1,43 @@
+<form class="layui-form  seller-alone-form" id="userAdd" style="padding:20px;">
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">用户手机号：</label>
+            <div class="layui-input-inline">
+                <input type="text" name="mobile" required lay-verify="required|phone"  class="layui-input">
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">会员等级：</label>
+            <div class="layui-input-inline">
+                <select name="upgrade_type" id="upgrade_type" required  lay-verify="required" lay-filter="goods_type_id">
+                    <option value="">请选择类型</option>
+                    {if condition="count($userGrade)>0"}
+
+                    {foreach $userGrade as $key=>$vo }
+                    <option value="{$vo.id}">{$vo.name}</option>
+                    {/foreach}
+
+                    {/if}
+                </select>
+            </div>
+        </div>
+    </div>
+
+
+
+    {:jshopToken()}
+</form>
+<script>
+    layui.use(['form', 'laydate'], function () {
+        var form = layui.form, laydate = layui.laydate;
+        form.render();
+
+        laydate.render({
+            elem: '#birthday'
+        });
+    });
+</script>

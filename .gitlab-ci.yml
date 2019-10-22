@@ -1,0 +1,124 @@
+include:
+  - .gitlab-ci-var.yml
+before_script:
+  - set -x
+  - . ci.sh
+  - db_password
+  - export DBNAME=${CI_PROJECT_NAMESPACE}_${CI_PROJECT_NAME}
+cache:
+  key: "$CI_COMMIT_REF_SLUG"
+  paths:
+    - dbpasswd.txt
+    - builds/
+stages:
+  - db
+  - dbpasswd
+  - build
+  - deploy
+  - web
+dbpasswd_php:
+  stage: dbpasswd
+  only:
+    changes:
+      - config/database.php
+  except:
+    variables: 
+      - $DB_SYNC
+      - $DB_PULL
+  artifacts:
+    name: dbpasswd_${CI_PROJECT_NAMESPACE}_${CI_PROJECT_NAME}_${CI_COMMIT_REF_NAME}
+    expire_in: 24 mos
+    paths:
+      - config/database.php
+  script:
+    - sync_password
+build_php:
+  stage: build
+  only:
+    changes:
+      - application/**/*
+      - addons/**/*
+      - config/**/*
+      - extend/**/*
+      - public/**/*
+      - route/**/*
+  except:
+    variables: 
+      - $DB_SYNC
+      - $DB_PULL
+  script:
+    - mkdir -p ${CI_BEAST_DST}
+    - rm -rf ${CI_BEAST_DST}/*
+    - |
+     [ "${CI_COMMIT_BEFORE_SHA:0:8}" = "00000000" ] && export CI_BUILD_ALL=true
+     [ $CI_BUILD_ALL ] && git ls-files>build-files.lst || git diff --name-only $CI_COMMIT_BEFORE_SHA HEAD >build-files.lst
+     cat build-files.lst
+    - encode_file.php --olddir $CI_BEAST_SRC --newdir $CI_BEAST_DST --expire $CI_BEAST_EXPIRE --encrypt $CI_BEAST_ENCRYPT_TYPE
+deploy_php_remote:
+  stage: deploy
+  retry: 2
+  only:
+    refs:
+      - master
+  except:
+    variables: 
+      - $DB_SYNC
+      - $DB_PULL
+  script:
+    - cd builds && tar -czvf $CI_PROJECT_PATH_SLUG.tar.gz $CI_PROJECT_PATH_SLUG
+    - ssh root@$CI_REMOTE_SERVER "mkdir -p $CI_REMOTE_PATH"
+    - scp -qB $CI_PROJECT_PATH_SLUG.tar.gz root@$CI_REMOTE_SERVER:$CI_REMOTE_PATH/
+    - |
+     ssh root@$CI_REMOTE_SERVER " \
+     cd $CI_REMOTE_PATH \
+     && tar --overwrite -zxvf $CI_PROJECT_PATH_SLUG.tar.gz \
+     && chown -R www-data:www-data $CI_PROJECT_PATH_SLUG \
+     && \rm $CI_PROJECT_PATH_SLUG.tar.gz" \
+     && \rm -rf ${CI_BEAST_DST}
+site_remote:
+  stage: web
+  retry: 2
+  only:
+    changes:
+      - .gitlab-ci-var.yml
+    refs:
+      - master
+  except:
+    variables: 
+      - $DB_SYNC
+      - $DB_PULL
+  script:
+    - |
+     [ "$REMOTE_SERVER_TYPE" = "docker" ] && site_remote_docker || site_remote
+deploy_php_local:
+  stage: deploy
+  only:
+    refs:
+      - dev
+  except:
+    variables: 
+      - $DB_SYNC
+      - $DB_PULL
+  script:
+    - cd builds && tar -czvf $CI_PROJECT_PATH_SLUG.tar.gz $CI_PROJECT_PATH_SLUG
+    - ssh root@$CI_LOCAL_SERVER "mkdir -p $CI_LOCAL_PATH"
+    - scp -qB $CI_PROJECT_PATH_SLUG.tar.gz root@$CI_LOCAL_SERVER:$CI_LOCAL_PATH/
+    - |
+     ssh root@$CI_LOCAL_SERVER " \
+     cd $CI_LOCAL_PATH \
+     && tar --overwrite -zxvf $CI_PROJECT_PATH_SLUG.tar.gz \
+     && chown -R www-data:www-data $CI_PROJECT_PATH_SLUG \
+     && \rm $CI_PROJECT_PATH_SLUG.tar.gz"
+site_local:
+  stage: web
+  only:
+    changes:
+      - .gitlab-ci-var.yml
+    refs:
+      - dev
+  except:
+    variables: 
+      - $DB_SYNC
+      - $DB_PULL
+  script:
+    - site_local 

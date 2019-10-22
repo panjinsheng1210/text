@@ -1,0 +1,132 @@
+<head>
+    <link rel="stylesheet" type="text/css" href="__STATIC_CSS__base.css"/>
+    <link rel="stylesheet" type="text/css" href="__STATIC_CSS__Spacetree.css"/>
+</head>
+<style>
+    li {
+        text-align:left;
+    }
+    #demo {
+        color:#000;
+    }
+    .layui-tree li a cite {
+        font-size: 16px;
+        color: #000;
+    }
+</style>
+<div class="layui-form-item" style="text-align:left">
+    <div class="layui-inline">
+        <label class="layui-form-label">手机号：</label>
+        <div class="layui-input-inline">
+            <input class="layui-input layui-input-inline" name="searchTree">
+        </div>
+    </div>
+</div>
+<div class="layui-form-item" style="text-align:left;font-size:20px">
+    {foreach $list as $vo}
+    <font color='{$vo.color}'>{$vo.name}</font>
+    {foreach gradeInfo as $key=>$vo }
+    <font color={$vo.color}>{$vo.name}</font>
+<!--    <font color='blue'>普通会员</font> <font color='#8b0000'>县级</font> <font color='#ff7f50'>市级</font> <font color='#006400'>省级</font>-->
+</div>
+<div id="demo"></div>
+<script type="text/javascript">
+    function toTree(data) {
+        // 删除 所有 children,以防止多次调用
+        data.forEach(function (item) {
+            delete item.children;
+        });
+
+        // 将数据存储为 以 id 为 KEY 的 map 索引数据列
+        var map = {};
+        data.forEach(function (item) {
+            map[item.id] = item;
+        });
+//        console.log(map);
+        var val = [];
+        data.forEach(function (item) {
+            // 以当前遍历项，的pid,去map对象中找到索引的id
+            var parent = map[item.pid];
+            // 好绕啊，如果找到索引，那么说明此项不在顶级当中,那么需要把此项添加到，他对应的父级中
+            if (parent) {
+                (parent.children || ( parent.children = [] )).push(item);
+            } else {
+                //如果没有在map中找到对应的索引ID,那么直接把 当前的item添加到 val结果集中，作为顶级
+                val.push(item);
+            }
+        });
+        return val;
+    }
+    getTree();
+    function getTree(){
+        $.ajax({
+            url: '{:url("User/commendList")}',
+            data: {
+                'type': 'getList',
+            },
+            dataType: 'json',
+            success: function (e) {
+                e=JSON.parse(e);
+                e = toTree(e);
+                console.log(e);
+                layui.use(['tree', 'layer'], function() {
+                    var layer = layui.layer
+                        , $ = layui.jquery
+                        , tree = layui.tree;
+                    tree.syncLayuiTreeFilter = function (treeId, filter, callback) {
+                        var treeElem = $('#' + treeId), filterElem = $(filter);
+                        if (!filterElem.length || !filterElem.length) {
+                            return;
+                        }
+                        filterElem.unbind('change').change(function (event) {
+                            var that = this;
+                            var value = $(that).val().trim();
+                            var HIDE = 'layui-hide';
+                            var hintClass = 'search_hit';
+                            // 先恢复现场
+                            treeElem.find('.' + HIDE).removeClass(HIDE);
+                            treeElem.find('.' + hintClass).removeClass(hintClass).each(function (index, item) {
+                                item = $(item);
+                                item.html(item.data('textOld')).data('textOld', null);
+                            });
+                            // 如果有值筛选开始
+                            if (value) {
+                                layui.each(treeElem.find('cite'), function (index, elem) {
+                                    elem = $(elem);
+                                    var textTemp = elem.text();
+                                    if (textTemp.indexOf(value) === -1) {
+                                        // 不存在就隐藏
+                                        elem.closest('li').addClass(HIDE);
+                                    } else {
+                                        // 命中就添加一个class
+                                        elem.addClass(hintClass)
+                                            .data('textOld', textTemp)
+                                            .html(textTemp.replace(new RegExp(value, 'g'), '<span class="search_hint_text">' + value + '</span>'));
+                                    }
+                                });
+                                layui.each(treeElem.find('.' + hintClass), function (index, elem) {
+                                    elem = $(elem);
+                                    elem.parents('li').removeClass(HIDE);
+                                    elem.parents('ul').each(function (i, item) {
+                                        if (!$(item).hasClass('layui-show')) {
+                                            $(item).parent('li').find('>i').click();
+                                        }
+                                    });
+                                    elem.parents('ul').parent('li').removeClass(HIDE);
+                                });
+                            }
+                            typeof callback === 'function' && callback.call(that, treeElem, filterElem, treeElem.find('.' + hintClass).length);
+                        });
+                    };
+                    layui.tree({elem: '#demo', nodes:e});
+                    tree.syncLayuiTreeFilter('demo', '[name="searchTree"]', function (treeElem, filterElem, hitNumbers) {
+                        console.log('hitNumbers', hitNumbers);
+                        layer.msg('找到' + hitNumbers + '个节点');
+                    });
+                });
+            }
+});}
+</script>
+<script>
+
+</script>

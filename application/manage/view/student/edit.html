@@ -1,0 +1,73 @@
+<form class="layui-form seller-alone-form" action="" method="post">
+
+    <input type="hidden" name="id" value="{$data.id}">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>学号：</label>
+        <div class="layui-input-inline seller-inline-5">
+            <input type="text" name="student_id" required lay-verify="required" value="{$data.student_id}" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>性别：</label>
+        <div class="layui-input-block">
+            <input type="radio" name="sex" value="1" title="男" {if $data.sex==1}checked="checked" {/if}>
+            <input type="radio" name="sex" value="2" title="女" {if $data.sex==2}checked="checked" {/if}>
+        </div>
+    </div>
+
+    <div class="layui-inline">
+        <label class="layui-form-label"><i class="required-color">*</i>手机号：</label>
+        <div class="layui-input-inline">
+            <input type="text" name="mobile" required lay-verify="required|phone" value="{$data.mobile}"  class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>身份证：</label>
+        <div class="layui-input-inline seller-inline-5">
+            <input type="text" name="id_card" required lay-verify="identity" value="{$data.id_card}" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>邮箱：</label>
+        <div class="layui-input-inline seller-inline-5">
+            <input type="text" name="email" lay-verify="email" required value="{$data.email}" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            {:jshopToken()}
+            <button type="button" class="layui-btn" lay-submit lay-filter="edit">保存</button>
+            <button onclick="javascript:history.back(-1)" type="reset" class="layui-btn layui-btn-primary">返回</button>
+        </div>
+    </div>
+</form>
+
+<script>
+    //Demo
+    layui.use('form', function(){
+        var form = layui.form;
+        //监听提交
+        form.on('submit(edit)', function(data){
+            JsPost("{:url('Student/edit')}", data.field, function(res){
+                if(res.status){
+                    layer.msg(res.msg, {time:1300},function(){
+                        window.location.href = "{:url('Student/index')}";
+                    });
+                }else{
+                    layer.msg(res.msg);
+                }
+            })
+        });
+    });
+</script>
+
+<!--<script>-->
+<!--    layui.use('form', function(){-->
+<!--        layui.form.render();-->
+<!--    });-->
+<!--</script>-->

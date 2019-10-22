@@ -1,0 +1,48 @@
+<div style="padding: 30px;" class="layui-form seller-alone-form"> <!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>分类名称：</label>
+        <div class="layui-input-inline seller-inline-5">
+            <input type="text" name="name" required lay-verify="required" placeholder="请输入兼职名称" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">排序：</label>
+        <div class="layui-input-inline seller-inline-2">
+            <input type="text" name="sort" required lay-verify="required" value="100" placeholder="数值越小越靠前" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            {:jshopToken()}
+            <button type="button" class="layui-btn" lay-submit lay-filter="add">保存</button>
+            <button onclick="javascript:history.back(-1);" type="reset" class="layui-btn layui-btn-primary">取消</button>
+        </div>
+    </div>
+    <!-- 更多表单结构排版请移步文档左侧【页面元素-表单】一项阅览 -->
+</div>
+
+<script>
+    layui.use(['form','table'], function(){
+        var $ = layui.$,form = layui.form,table = layui.table;
+        //监听提交
+        form.render();
+        //表单提交页面
+        form.on('submit(add)', function(data){
+            JsPost("{:url('Leilast/add')}", data.field, function(res){
+                if(res.status){
+                    layer.msg(res.msg, {time:1300},function(){
+                        window.location.href = "{:url('Leilast/index')}";
+                    });
+                }else{
+                    layer.msg(res.msg);
+                }
+            })
+        });
+
+    });
+
+</script>

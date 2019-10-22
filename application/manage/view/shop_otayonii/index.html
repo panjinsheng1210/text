@@ -1,0 +1,393 @@
+<style>
+    @media screen and (max-width: 500px) {
+        
+        .layui-layer.layui-layer-page {
+            width: 100% !important;
+            overflow-x: scroll !important;
+            left: 0 !important;
+        }
+
+        .layui-layer-title {
+            width: 100% !important;
+            box-sizing: border-box;
+        }
+
+        .layui-layer-content {
+            width: 100% !important;
+        }
+    }
+</style>
+<form class="layui-form seller-form search-form" action="">
+    <div class="layui-form-item">
+
+        <div class="layui-inline">
+            <label class="layui-form-label">手机号：</label>
+            <div class="layui-input-inline">
+                <input type="text" name="mobile" lay-verify="title"  placeholder="请输入手机号"
+                    autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <!--<div class="layui-inline">-->
+            <!--<label class="layui-form-label">类型：</label>-->
+            <!--<div class="layui-input-inline seller-inline-3">-->
+                <!--<select name="type" lay-verify="">-->
+                    <!--<option value=""></option>-->
+                    <!--{foreach shopOtayonii as $key=>$vo }-->
+                    <!--<option value="{$key}">{$vo}</option>-->
+                    <!--{/foreach}-->
+
+                <!--</select>-->
+            <!--</div>-->
+        <!--</div>-->
+
+
+        <div class="layui-inline">
+            <!--<div class="layui-input-block">-->
+            <button class="layui-btn layui-btn-sm" lay-submit lay-filter="*"><i
+                    class="iconfont icon-chaxun"></i>筛选</button>
+            <!--</div>-->
+        </div>
+    </div>
+</form>
+
+
+<div class="layui-card-body">
+    <div class="layui-tab layui-tab-card" lay-filter="user-tab">
+        <ul class="layui-tab-title">
+            <li lay-id="1" class="layui-this">余额明细</li>
+            <li lay-id="4">积分明细</li>
+            <li lay-id="2">金豆明细</li>
+            <li lay-id="3">店铺账户</li>
+            <li lay-id="5">优惠卷明细</li>
+        </ul>
+        <div class="table-body">
+            <table id="userTable" lay-filter="userTable"></table>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<script src="__STATIC_JS__jquery.form.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    var table, window_box,del_type;
+
+    layui.use(['form', 'layedit', 'laydate', 'table','element'], function () {
+        var element  = layui.element;
+        element.on('tab(user-tab)', function (data) {
+            var type = this.getAttribute('lay-id');
+            $('.search-form').attr('action',"{:url('balance/index')}");
+            del_type = type;
+            if(type == 1){
+                $('.search-form').attr('action',"{:url('balance/index')}?_ajax=1");
+                table = layui.table.render({
+                    elem: '#userTable',
+                    height: 'full-220',
+                    cellMinWidth: '80',
+                    page: 'true',
+                    limit: '20',
+                    id: 'userTable',
+                    url: "{:url('balance/index')}?_ajax=1",
+                    cols: [[
+                        { type: 'numbers' },
+                        {
+                            field: 'mobile', width: 140, title: '用户', align: 'center', templet: function (data) {
+                                var html = '';
+                                html += data.mobile;
+                                return html;
+                            }
+                        },
+                        { field: 'type', align: 'center', width: 120, title: '类型' },
+                        { field: 'money', align: 'center', width: 160, title: '金额' },
+                        { field: 'balance', align: 'center', width: 160, title: '余额' },
+                        { field: 'memo', align: 'center', title: '描述' },
+                        { field: 'ctime', align: 'center', width: 200, title: '时间' }
+                    ]]
+                });
+            }else if (type == 2){
+                $('.search-form').attr('action',"{:url('ShopOtayonii/index')}");
+                table = layui.table.render({
+                    elem: '#userTable',
+                    height: 'full-220',
+                    cellMinWidth: '80',
+                    page: 'true',
+                    limit: '20',
+                    url: "{:url('ShopOtayonii/index')}?_ajax=1&finance_id=2",
+                    id: 'userTable',
+                    cols: [[
+                        { type: 'numbers' },
+                        //                {field:'username', width:100,title:'账号'},
+                        {
+                            title: '用户',width:140, templet: function (data) {
+                                var html = '<a class="link-hot option-show a-mobile" data-mobile="' + data.mobile + '">' + data.mobile + '</a>';
+                                return html;
+                            }
+                        },
+                        { field: 'type', title: '类型', width: 120 },
+                        { field: 'num', title: '金额', width: 160 },
+                        { field: 'balance', width: 160,title: '余额' },
+                        { field: 'remarks', title: '描述' },
+
+                        { field: 'ctime', title: '时间' ,width: 200},
+                        {
+                            field: 'option', title: '操作', templet: function (d) {
+                                var html = '<a class="layui-btn layui-btn-danger layui-btn-xs del-class" data-id="' + d.id + '">删除</a>';
+                                return html;
+
+
+                            }, align: 'center', width: 200
+                        }
+                    ]]
+                });
+            }else if(type == 3){
+                $('.search-form').attr('action',"{:url('ShopOtayonii/index')}");
+                table = layui.table.render({
+                    elem: '#userTable',
+                    height: 'full-220',
+                    cellMinWidth: '80',
+                    page: 'true',
+                    limit: '20',
+                    url: "{:url('ShopOtayonii/index')}?_ajax=1&finance_id=3",
+                    id: 'userTable',
+                    cols: [[
+                        { type: 'numbers' },
+                        //                {field:'username', width:100,title:'账号'},
+                        {
+                            title: '用户',width:140, templet: function (data) {
+                                var html = '<a class="link-hot option-show a-mobile" data-mobile="' + data.mobile + '">' + data.mobile + '</a>';
+                                return html;
+                            }
+                        },
+                        { field: 'name', title: '店铺', width: 120 },
+                        { field: 'type', title: '类型', width: 120 },
+                        { field: 'num', title: '金额', width: 160 },
+                        { field: 'balance', width: 160,title: '余额' },
+                        { field: 'remarks', title: '描述' },
+
+                        { field: 'ctime', title: '时间' ,width: 200},
+                        {
+                            field: 'option', title: '操作', templet: function (d) {
+                                var html = '<a class="layui-btn layui-btn-danger layui-btn-xs del-class" data-id="' + d.id + '">删除</a>';
+                                return html;
+
+
+                            }, align: 'center', width: 200
+                        }
+                    ]]
+                });
+            }else if(type == 4){
+                $('.search-form').attr('action',"{:url('User/pointLog')}");
+                table = layui.table.render({
+                    elem: '#userTable',
+                    cellMinWidth: '80',
+                    page: 'true',
+                    limit:'10',
+                    url: "{:url('User/pointLog')}?_ajax=1&flag=true",
+                    id:'userTable',
+                    height: '471',
+                    response: {
+                        statusName: 'status',
+                        statusCode: 1
+                    },
+                    cols: [[
+                        {type:'numbers'},
+                        {
+                            title: '用户',width:140, templet: function (data) {
+                                var html = '<a class="link-hot option-show a-mobile" data-mobile="' + data.mobile + '">' + data.mobile + '</a>';
+                                return html;
+                            }
+                        },
+                        {field:'type', width:95, title:'类型'},
+                        {field:'num', width:110, title:'数量'},
+                        {field:'balance', width:150, title:'余额'},
+                        {field:'remarks', title: '备注'},
+                        {field:'ctime', width:165, title:'时间'}
+                    ]]
+                });
+            }else if(type == 5){
+                table = layui.table.render({
+                    elem: '#userTable',
+                    height: 'full-220',
+                    cellMinWidth: '80',
+                    page: 'true',
+                    limit: '20',
+                    url: "{:url('ShopOtayonii/index')}?_ajax=1&finance_id=5",
+                    id: 'userTable',
+                    cols: [[
+                        { type: 'numbers' },
+                        //                {field:'username', width:100,title:'账号'},
+                        {
+                            title: '用户',width:140, templet: function (data) {
+                                var html = '<a class="link-hot option-show a-mobile" data-mobile="' + data.mobile + '">' + data.mobile + '</a>';
+                                return html;
+                            }
+                        },
+                        { field: 'type', title: '类型', width: 120 },
+                        { field: 'num', title: '金额', width: 160 },
+                        { field: 'balance', width: 160,title: '余额' },
+                        { field: 'remarks', title: '描述' },
+
+                        { field: 'ctime', title: '时间' ,width: 200},
+                        {
+                            field: 'option', title: '操作', templet: function (d) {
+                                var html = '<a class="layui-btn layui-btn-danger layui-btn-xs del-class" data-id="' + d.id + '">删除</a>';
+                                return html;
+
+
+                            }, align: 'center', width: 200
+                        }
+                    ]]
+                });
+            }
+        });
+
+        table = layui.table.render({
+            elem: '#userTable',
+            height: 'full-220',
+            cellMinWidth: '80',
+            page: 'true',
+            limit: '20',
+            user_id: 33,
+            url: "{:url('balance/index')}?_ajax=1",
+            id:'userTable',
+            cols: [[
+                { type: 'numbers' },
+                {
+                    field: 'mobile', width: 140, title: '用户', align: 'center', templet: function (data) {
+                        var html = '';
+                        html += data.mobile;
+                        return html;
+                    }
+                },
+                { field: 'type', align: 'center', width: 120, title: '类型' },
+                { field: 'money', align: 'center', width: 160, title: '金额' },
+                { field: 'balance', align: 'center', width: 100, title: '余额' },
+                { field: 'memo', align: 'center', width: 260,title: '描述' },
+                { field: 'ctime', align: 'center', width: 200, title: '时间' }
+            ]]
+        });
+        //搜索
+        layui.form.on('submit(*)', function (data) {
+            layui.table.reload('userTable', {
+                where: data.field
+                , page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+        //跳转会员列表
+        $(document).on('click', '.a-mobile', function () {
+
+            var mobile = $(this).attr('data-mobile');
+            window.location.href = "{:url('manage/user/index')}" + '?mobile=' + mobile;
+        });
+
+        //删除记录
+        $(document).on('click', '.del-class', function(){
+            var id = $(this).attr('data-id');
+            layer.confirm('确认删除吗？', {
+                title: '提示', btn: ['确认', '取消'] //按钮
+            }, function(){
+                delClass(id);
+            });
+        });
+
+        //删除操作
+        function delClass(id){
+            if(del_type == 2 || del_type == 3){
+                JsPost('{:url("shopOtayonii/del")}',{id:id},function(e){
+                    layer.msg(e.msg, {time: 1300}, function(){
+                        table.reload('userTable');
+                    });
+                });
+            }
+        }
+
+
+        //添加
+        layui.form.on('submit(user-add)', function () {
+            $.ajax({
+                type: 'get',
+                url: "{:url('Appropriates/addAppropriate')}",
+                success: function (e) {
+                    window.box = layer.open({
+                        type: 1,
+                        content: e,
+                        area: ['700px', '550px'],
+                        title: '拨扣款',
+                        btn: ['确定', '取消'],
+                        zIndex: 1800,
+                        yes: function () {
+                            var data = $("#userAdd").serializeArray();
+                            $.ajax({
+                                type: 'post',
+                                url: '{:url("Appropriates/addAppropriate")}',
+                                data: data,
+                                dataType: 'json',
+                                success: function (e) {
+                                    if (e.status) {
+                                        layer.close(window.box);
+                                        layer.msg(e.msg, { time: 1300 }, function () {
+                                            layui.table.reload('userTable');
+                                        });
+                                    } else {
+                                        layer.msg(e.msg);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+            return false;
+        });
+        //编辑
+        $(document).on('click', '.edit', function () {
+            var user_id = $(this).attr('data-id');
+            $.ajax({
+                url: '{:url("User/editUser")}',
+                data: {
+                    user_id: user_id
+                },
+                type: 'get',
+                success: function (e) {
+                    window.box = layer.open({
+                        type: 1,
+                        content: e,
+                        area: ['700px', '550px'],
+                        title: '编辑用户',
+                        btn: ['确定', '取消'],
+                        zIndex: 1800,
+                        yes: function () {
+                            var data = $("#userEdit").serializeArray();
+                            $.ajax({
+                                type: 'post',
+                                url: '{:url("User/editUser")}',
+                                data: data,
+                                dataType: 'json',
+                                success: function (e) {
+                                    if (e.status) {
+                                        layer.close(window.box);
+                                        layer.msg(e.msg, { time: 1300 }, function () {
+                                            layui.table.reload('userTable');
+                                        });
+                                    } else {
+                                        layer.msg(e.msg);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
+
+    });
+</script>

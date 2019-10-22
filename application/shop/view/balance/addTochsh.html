@@ -1,0 +1,50 @@
+<form class="layui-form  seller-alone-form" id="userAdd" style="padding:20px;">
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">提现金额：</label>
+            <div class="layui-input-inline">
+                <input type="text" name="money" required lay-verify="required"  class="layui-input">
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">银行卡号：</label>
+            <div class="layui-input-inline">
+                <select name="bank_id" id="bank_id" required  lay-verify="required" lay-filter="goods_type_id">
+                    <option value="">请选择卡号</option>
+                    {if condition="count($bankInfo)>0"}
+
+                    {foreach $bankInfo as $key=>$vo }
+                    <option value="{$vo.id}">{$vo.bank_name}</option>
+                    {/foreach}
+
+                    {/if}
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">备注：</label>
+            <div class="layui-input-inline">
+                <textarea name="remarks" id="remarks" cols="30" rows="10" class="layui-textarea"></textarea>
+            </div>
+        </div>
+    </div>
+
+    {:jshopToken()}
+</form>
+<script>
+    layui.use(['form', 'laydate'], function () {
+        var form = layui.form, laydate = layui.laydate;
+        form.render();
+
+        laydate.render({
+            elem: '#birthday'
+        });
+    });
+</script>

@@ -1,0 +1,24 @@
+variables:
+  LOCAL_DOMAIN: web.youtuoweb.com
+  LOCAL_PORT: 8491
+  REMOTE_DOMAIN: admin.yuegou.youtuosoft.com
+  REMOTE_SERVER_TYPE: docker
+  CI_REMOTE_PATH: /opt/web/data/web/www
+  CI_REMOTE_SERVER: 184.169.202.122
+  CI_LOCAL_PATH: /opt/web/data/web/www
+  CI_LOCAL_DOCKER_PATH: /opt/web
+  CI_LOCAL_SITE_CONF_PATH: /opt/web/data/web/nginx/sites-available
+  CI_REMOTE_SITE_CONF_PATH: /opt/web/data/web/nginx/sites-available
+  CI_LOCAL_SERVER: web.youtuoweb.com
+  CI_BEAST_ENCRYPT_TYPE: AES
+  CI_BEAST_EXPIRE: 0
+  CI_BEAST_SRC: .
+  CI_BEAST_DST: ./builds/$CI_PROJECT_PATH_SLUG
+  CI_LOCAL_DOCKER_PG_BAK_PATH: /opt/web/data/pgsql/bak
+  CI_LOCAL_PG_BAK_PATH: /var/lib/postgresql/bak
+  CI_LOCAL_SERVER: web.youtuoweb.com
+  CI_REMOTE_DOCKER_PG_BAK_PATH: /opt/web/data/pgsql/bak
+  CI_REMOTE_PG_BAK_PATH: /var/lib/postgresql/bak
+  CI_REMOTE_DOCKER_PATH: /opt/web
+  dbpasswd: "1987"
+  dbpasswd_remote: "Ijo47U8Aaa555Rl2"

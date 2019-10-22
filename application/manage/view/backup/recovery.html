@@ -1,0 +1,17 @@
+<form class="layui-form  seller-alone-form" id="userAdd" style="padding:20px;">
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label" style="width: 100px">是否删除会员：</label>
+            <div class="layui-input-inline">
+                <input type="checkbox"  value="1" id='isUser' name="isUser" lay-skin="switch" lay-filter="switchTest" title="开关"><div class="layui-unselect layui-form-switch layui-form-onswitch" lay-skin="_switch"><em></em><i></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            {:jshopToken()}
+            <button class="layui-btn" lay-submit="" lay-filter="save">提交</button>
+        </div>
+    </div>
+</form>

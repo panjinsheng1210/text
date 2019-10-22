@@ -1,0 +1,27 @@
+<div class="layui-form seller-alone-form" style="margin-top: 20px">
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">标题：</label>
+            <div class="layui-input-inline seller-inline-6">
+                <input type="text" id="title" class="layui-input" value="{$reply.title}">
+                <input type="hidden" id="message_id" value="{$message_id}">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">内容：</label>
+            <div class="layui-input-inline seller-inline-6">
+                <textarea id ="content" name="memo" placeholder="请输入内容" class="layui-textarea" rows="14" >{$reply.content}</textarea>
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <div class="layui-input-block">
+                <button class="layui-btn layui-btn-sm reply-save" style="margin-top: 10px;margin-left:200px">回复</button>
+            </div>
+        </div>
+    </div>
+    {:jshopToken()}
+</div>

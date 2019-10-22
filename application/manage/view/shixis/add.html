@@ -1,0 +1,134 @@
+<div style="padding: 30px;" class="layui-form seller-alone-form"> <!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>实习名称：</label>
+        <div class="layui-input-inline seller-inline-5">
+            <input type="text" name="name" required lay-verify="required" placeholder="请输入实习名称" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>公司名称：</label>
+        <div class="layui-input-inline seller-inline-5">
+            <input type="text" name="comp_id" required lay-verify="required" placeholder="请输入公司名称" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>联系电话：</label>
+        <div class="layui-input-inline seller-inline-5">
+            <input type="text" name="phone" required lay-verify="required" placeholder="请输入联系电话" autocomplete="off" class="layui-input">
+        </div>
+    </div>  
+
+
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>实习介绍：</label>
+        <div class="layui-input-inline seller-inline-5">
+            <input type="text" name="introduce" required lay-verify="required" placeholder="请输入实习介绍" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+<!--    <div class="layui-form-item">-->
+<!--        <label class="layui-form-label"><i class="required-color">*</i>实习类型：</label>-->
+<!--        <div class="layui-input-inline seller-inline-3">-->
+<!--            <select name="type_id" id="type" lay-verify="required">-->
+<!--                <option value="">请选择实习类型</option>-->
+<!--                {volist name='list' id='vo'}-->
+<!--                <option value="{$vo.id}">{$vo.name}</option>-->
+<!--                {/volist}-->
+<!--            </select>-->
+<!--        </div>-->
+<!--    </div>-->
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>实习标签：</label>
+        <div class="layui-input-block">
+            <?php foreach($list as $key => $vo) { ?>
+            <input type="checkbox" name="type_id[]" lay-skin="primary" title="{$vo.name}" value="<?php echo $vo['id'] ?>"/>
+            <?php } ?>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>实习地址：</label>
+        <div class="layui-input-inline seller-inline-5">
+            <input type="text" name="address" required lay-verify="required" placeholder="请输入实习地址" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>实习薪水：</label>
+        <div class="layui-input-inline seller-inline-5">
+            <input type="text" name="money" required lay-verify="required" placeholder="请输入实习薪水" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>实习单位：</label>
+        <div class="layui-input-inline seller-inline-3">
+            <select name="company" lay-filter="company" lay-verify="required">
+                {volist name='company' id='vo'}
+                <option value="{$i}" {eq name="$i" value="0"}selected{/eq}>{$vo}</option>
+                {/volist}
+
+            </select>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>实习内容：</label>
+        <div class="layui-input-block">
+            <textarea placeholder="请输入实习内容" name="content" class="layui-textarea"></textarea>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>是否急聘：</label>
+        <div class="layui-input-block">
+            <input type="checkbox" name="worry" value="1" lay-skin="primary" title="急">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label">排序：</label>
+        <div class="layui-input-inline seller-inline-2">
+            <input type="text" name="sort" required lay-verify="required" value="100" placeholder="数值越小越靠前" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            {:jshopToken()}
+            <button type="button" class="layui-btn" lay-submit lay-filter="add">保存</button>
+            <button onclick="javascript:history.back(-1);" type="reset" class="layui-btn layui-btn-primary">取消</button>
+        </div>
+    </div>
+    <!-- 更多表单结构排版请移步文档左侧【页面元素-表单】一项阅览 -->
+</div>
+
+<script>
+    layui.use(['form','table'], function(){
+        var $ = layui.$,form = layui.form,table = layui.table;
+        //监听提交
+        form.render();
+        //表单提交页面
+        form.on('submit(add)', function(data){
+            JsPost("{:url('Shixis/add')}", data.field, function(res){
+                if(res.status){
+                    layer.msg(res.msg, {time:1300},function(){
+                        window.location.href = "{:url('Shixis/index')}";
+                    });
+                }else{
+                    layer.msg(res.msg);
+                }
+            })
+        });
+
+    });
+
+</script>

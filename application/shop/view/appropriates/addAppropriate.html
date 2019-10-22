@@ -1,0 +1,52 @@
+<form class="layui-form  seller-alone-form" id="userAdd" style="padding:20px;">
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">用户手机号：</label>
+            <div class="layui-input-inline">
+                <input type="text" name="mobile" required lay-verify="required|phone"  class="layui-input">
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">财务类型：</label>
+            <div class="layui-input-inline">
+                <select name="finance_id" id="finance_id" required  lay-verify="required" lay-filter="goods_type_id">
+                    <option value="">请选择类型</option>
+                    {if condition="count($financeType)>0"}
+
+                    {foreach $financeType as $key=>$vo }
+                    <option value="{$key}">{$vo}</option>
+                    {/foreach}
+
+                    {/if}
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">拨款金额：</label>
+            <div class="layui-input-inline">
+                <input type="text" name="currency" required lay-verify="required"  class="layui-input">
+            </div>
+            <div class="layui-form-mid layui-word-aux">正数为拨款，负数扣款</div>
+        </div>
+    </div>
+
+
+    {:jshopToken()}
+</form>
+<script>
+    layui.use(['form', 'laydate'], function () {
+        var form = layui.form, laydate = layui.laydate;
+        form.render();
+
+        laydate.render({
+            elem: '#birthday'
+        });
+    });
+</script>

@@ -1,0 +1,86 @@
+<ul class="layui-nav layui-nav-tree" lay-shrink="all" id="LAY-system-side-menu" lay-filter="layadmin-system-side-menu">
+    <li data-name="home"  class="layui-nav-item layui-nav-itemed">
+        <a class="" lay-href="{:url('index/welcome')}" href="javascript:;" lay-tips="首页" lay-direction="2" ><i class="iconfont icon-shouyeshouye"></i>首页</a>
+    </li>
+
+    <li data-name="goods" class="layui-nav-item">
+            <a class="menu-icon-goods" href="javascript:;" lay-tips="商品管理"  lay-direction="2">
+                <i class="iconfont icon-goods"></i>商品管理
+            </a>
+            <dl class="layui-nav-child">
+                <dd data-name="index">
+                    <a href="javascript:;" lay-href="/shop/goods/index" style="padding-left: 44px;">商品列表</a>
+                </dd>
+                <dd data-name="catetories">
+                    <a href="javascript:;" lay-href="/shop/user/comment" style="padding-left: 44px;">商品评价</a>
+                </dd>
+            </dl>
+    </li>
+    <li data-name="order" class="layui-nav-item">
+        <a class="menu-icon-order" href="javascript:;" lay-tips="订单管理" lay-direction="2">
+            <i class="iconfont icon-order"></i>订单管理            <span class="layui-nav-more"></span></a>
+        <dl class="layui-nav-child">
+            <dd data-name="order">
+                <a href="javascript:;" lay-href="/shop/order/index.html" style="padding-left: 44px;">订单列表</a>
+            </dd>
+            <dd data-name="order">
+                <a href="javascript:;" lay-href="/shop/bill_delivery/index.html" style="padding-left: 44px;">发货单列表</a>
+            </dd>
+            <dd data-name="order">
+                <a href="javascript:;" lay-href="/shop/bill_aftersales/index.html" style="padding-left: 44px;">售后单列表</a>
+            </dd>
+            <dd data-name="order">
+                <a href="javascript:;" lay-href="/shop/bill_reship/index.html" style="padding-left: 44px;">退货单列表</a>
+            </dd>
+        </dl>
+    </li>
+    <li data-name="billpayments" class="layui-nav-item">
+        <a class="menu-icon-billpayments" href="javascript:;" lay-tips="财务管理" lay-direction="2">
+            <i class="iconfont icon-billpayments"></i>财务管理            <span class="layui-nav-more"></span></a>
+        <dl class="layui-nav-child">
+            <dd data-name="billpayments">
+                <a href="javascript:;" lay-href="/shop/balance/tocash.html" style="padding-left: 44px;">提现列表</a>
+            </dd>
+            <dd data-name="billpayments">
+                <a href="javascript:;" lay-href="/shop/shop/index.html" style="padding-left: 44px;">财务账户</a>
+            </dd>
+            <dd data-name="billpayments">
+                <a href="javascript:;" lay-href="/shop/bill_payments/index.html" style="padding-left: 44px;">支付单列表</a>
+            </dd>
+            <dd data-name="billpayments">
+                <a href="javascript:;" lay-href="/shop/bill_refund/index.html" style="padding-left: 44px;">退款单列表</a>
+            </dd>
+            <dd data-name="billpayments">
+                <a href="javascript:;" lay-href="/shop/Shop_Otayonii/index.html" style="padding-left: 44px;">财务流水</a>
+            </dd>
+        </dl>
+    </li>
+    <li data-name="report" class="layui-nav-item">
+        <a class="menu-icon-report" href="javascript:;" lay-tips="报表统计" lay-direction="2">
+            <i class="iconfont icon-report"></i>报表统计            <span class="layui-nav-more"></span></a>
+        <dl class="layui-nav-child">
+            <dd data-name="report">
+                <a href="javascript:;" lay-href="/shop/report/order.html" style="padding-left: 44px;">订单销量</a>
+            </dd>
+            <dd data-name="report">
+                <a href="javascript:;" lay-href="/shop/report/payments.html" style="padding-left: 44px;">财务收款</a>
+            </dd>
+            <dd data-name="report">
+                <a href="javascript:;" lay-href="/shop/report/goods.html" style="padding-left: 44px;">商品销量</a>
+            </dd>
+            <dd data-name="report">
+                <a href="javascript:;" lay-href="/shop/report/goodscollection.html" style="padding-left: 44px;">用户收藏统计</a>
+            </dd>
+        </dl>
+    </li>
+    <li data-name="setting" class="layui-nav-item">
+        <a class="menu-icon-setting" href="javascript:;" lay-tips="控制面板" lay-direction="2">
+            <i class="iconfont icon-setting"></i>控制面板            <span class="layui-nav-more"></span></a>
+        <dl class="layui-nav-child">
+            <dd data-name="setting">
+                <a href="javascript:;" lay-href="/shop/setting/index.html" style="padding-left: 44px;">店铺设置</a>
+            </dd>
+        </dl>
+
+    </li>
+ </ul>

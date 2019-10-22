@@ -1,0 +1,277 @@
+<style>
+    @media screen and (max-width: 500px) {
+        
+        .layui-layer.layui-layer-page {
+            width: 100% !important;
+            overflow-x: scroll !important;
+            left: 0 !important;
+        }
+
+        .layui-layer-title {
+            width: 100% !important;
+            box-sizing: border-box;
+        }
+
+        .layui-layer-content {
+            width: 100% !important;
+        }
+    }
+</style>
+
+<form class="layui-form seller-form" action="">
+    <div class="layui-form-item">
+
+        <div class="layui-inline">
+            <!--<div class="layui-input-block">-->
+            <button class="layui-btn layui-btn-sm" lay-submit lay-filter="user-add"><i
+                    class="layui-icon">&#xe608;</i>添加备份</button>
+            <!--</div>-->
+        </div>
+    </div>
+</form>
+<div class="table-body">
+    <div class="layui-tab layui-tab-card" lay-filter="order-tab">
+        <ul class="layui-tab-title">
+            <li class="layui-this" lay-id="manual" id="manual">手动备份</li>
+            <li lay-id="automatic" id="automatic">自动备份</li>
+        </ul>
+        <div class="table-body">
+            <table id="userTable" lay-filter="test"></table>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<script src="__STATIC_JS__jquery.form.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    var table, window_box;
+    layui.use(['form', 'layedit', 'laydate', 'table','element'], function () {
+        var element = layui.element,filter = {};
+        table = layui.table.render({
+            elem: '#userTable',
+            height: 'full-220',
+            cellMinWidth: '80',
+            page: 'true',
+            limit: '20',
+            url: "{:url('backup/index')}?_ajax=1&type=1",
+            id: 'userTable',
+            cols: [[
+                { type: 'numbers' },
+                //                {field:'username', width:100,title:'账号'},
+                { field: 'name', title: '功能', width: 300 },
+                { field: 'backup_time', title: '备份时间', width: 250 },
+                { field: 'recovery_time', title: '恢复时间', width: 250 },
+                { field: 'ctime', title: '创建时间', width: 250 },
+                {
+                    field: 'option', title: '操作', templet: function (d) {
+                        var html = '';
+                        if(d.type == 1 && !d.backup_time){
+                            html += '<a class="layui-btn  layui-btn-xs backup-class" data-id="' + d.id + '">备份</a>';
+                        }
+                        if(d.backup_time && d.file_path){
+                            html += '<a class="layui-btn layui-btn-blue layui-btn-xs restore-class" data-id="' + d.id + '">恢复</a>';
+                        }
+                        if(d.file_path){
+                            html += '<a class="layui-btn  layui-btn-xs dowonload-class" data-id="' + d.id + '">下载</a>';
+                        }
+                            html += '<a class="layui-btn layui-btn-danger layui-btn-xs del-class" data-id="' + d.id + '">删除</a>';
+
+                        return html;
+
+
+                    }, align: 'center'
+                }
+            ]]
+        });
+        element.on('tab(order-tab)', function (data) {
+            var type = this.getAttribute('lay-id');
+            if (type === 'manual') {
+                filter.type = 1;
+            } else {
+                filter.type = 2;
+            }
+            var basefilter = $(".seller-form").serializeArray();
+            $.each(basefilter, function (i, obj) {
+                if (!filter.hasOwnProperty(obj.name)) {
+                    filter[obj.name] = obj.value;
+                }
+            });
+            table.reload({
+                where: filter,
+                page: { curr: 1 }
+            });
+        });
+        //搜索
+        layui.form.on('submit(*)', function (data) {
+            layui.table.reload('userTable', {
+                where: data.field
+                , page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+        //跳转会员列表
+        $(document).on('click', '.a-mobile', function () {
+
+            var mobile = $(this).attr('data-mobile');
+            window.location.href = "{:url('manage/user/index')}" + '?mobile=' + mobile;
+        });
+
+        //删除记录
+        $(document).on('click', '.del-class', function(){
+            var id = $(this).attr('data-id');
+            layer.confirm('确认删除吗？', {
+                title: '提示', btn: ['确认', '取消'] //按钮
+            }, function(){
+                delClass(id);
+            });
+        });
+
+        //删除操作
+        function delClass(id){
+            JsPost('{:url("backup/del")}',{id:id},function(e){
+                layer.msg(e.msg, {time: 1300}, function(){
+                    table.reload('userTable');
+                });
+            });
+        }
+
+        //备份
+        $(document).on('click', '.backup-class', function(){
+            var id = $(this).attr('data-id');
+            layer.confirm('确认备份吗？', {
+                title: '提示', btn: ['确认', '取消'] //按钮
+            }, function(){
+                JsPost('{:url("backup/backup")}',{id:id},function(e){
+                    layer.msg(e.msg, {time: 1300}, function(){
+                        table.reload('userTable');
+                    });
+                });
+            });
+        });
+        //恢复
+        $(document).on('click', '.restore-class', function(){
+            var id = $(this).attr('data-id');
+            layer.confirm('确认恢复吗？', {
+                title: '提示', btn: ['确认', '取消'] //按钮
+            }, function(){
+                JsPost('{:url("backup/restore")}',{id:id},function(e){
+                    layer.msg(e.msg, {time: 1300}, function(){
+                        table.reload('userTable');
+                    });
+                });
+            });
+        });
+        //恢复
+        $(document).on('click', '.dowonload-class', function(){
+            var id = $(this).attr('data-id');
+            // layer.confirm('确认下载吗？', {
+            //     title: '提示', btn: ['确认', '取消'] //按钮
+            // }, function(){
+            //     JsPost('{:url("backup/dowonload")}',{id:id},function(e){
+            //         layer.msg(e.msg, {time: 1300}, function(){
+            //             table.reload('userTable');
+            //         });
+            //     });
+            // });
+            window.location.href = "{:url('manage/backup/dowonload')}" + '?id=' + id;
+        });
+
+
+        // //删除记录
+        // $(document).on('click', '.backup', function(){
+        //     JsPost('{:url("backsql/index")}',function(e){
+        //         layer.msg(e.msg, {time: 1300}, function(){
+        //             table.reload('goodsTable');
+        //         });
+        //     });
+        // });
+
+        //添加
+        layui.form.on('submit(user-add)', function () {
+            $.ajax({
+                type: 'get',
+                url: "{:url('Backup/addBackup')}",
+                success: function (e) {
+                    window.box = layer.open({
+                        type: 1,
+                        content: e,
+                        area: ['700px', '550px'],
+                        title: '添加记录',
+                        btn: ['确定', '取消'],
+                        zIndex: 1800,
+                        yes: function () {
+                            var data = $("#userAdd").serializeArray();
+                            console.log(data);
+                            $.ajax({
+                                type: 'post',
+                                url: '{:url("Backup/addBackup")}',
+                                data: data,
+                                dataType: 'json',
+                                success: function (e) {
+                                    if (e.status) {
+                                        layer.close(window.box);
+                                        layer.msg(e.msg, { time: 1300 }, function () {
+                                            layui.table.reload('userTable');
+                                        });
+                                    } else {
+                                        layer.msg(e.msg);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+            return false;
+        });
+
+        //编辑
+        $(document).on('click', '.edit', function () {
+            var user_id = $(this).attr('data-id');
+            $.ajax({
+                url: '{:url("User/editUser")}',
+                data: {
+                    user_id: user_id
+                },
+                type: 'get',
+                success: function (e) {
+                    window.box = layer.open({
+                        type: 1,
+                        content: e,
+                        area: ['700px', '550px'],
+                        title: '编辑用户',
+                        btn: ['确定', '取消'],
+                        zIndex: 1800,
+                        yes: function () {
+                            var data = $("#userEdit").serializeArray();
+                            $.ajax({
+                                type: 'post',
+                                url: '{:url("User/editUser")}',
+                                data: data,
+                                dataType: 'json',
+                                success: function (e) {
+                                    if (e.status) {
+                                        layer.close(window.box);
+                                        layer.msg(e.msg, { time: 1300 }, function () {
+                                            layui.table.reload('userTable');
+                                        });
+                                    } else {
+                                        layer.msg(e.msg);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        });
+
+    });
+</script>

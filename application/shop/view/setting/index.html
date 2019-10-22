@@ -1,0 +1,231 @@
+<script type="text/javascript" charset="utf-8" src="__STATIC_JS__/jquery-2.1.3.min.js"> </script>
+<link rel="stylesheet" href="__STATIC_JS__croppic/croppic.css">
+<script type="text/javascript" charset="utf-8" src="__STATIC_JS__croppic/croppic.js"> </script>
+<script type="text/javascript" charset="utf-8" src="__STATIC_JS__ddsort/ddsort.js"> </script>
+
+<style>
+    #container{
+        padding: 0px;
+        border-radius:0px;
+        border-width:0px;
+    }
+    #img_preview{
+        display: inline;
+        float: left;
+        margin-top: 40px;
+        overflow: hidden;
+    }
+    .imgdiv{
+        display: inline;
+        float: left;
+        text-align: center;
+        border: 1px solid #ccc;
+        padding: 5px;
+        padding-bottom: 0;
+        margin-right: 10px;
+    }
+    #operate{
+        margin-top: 5px;
+    }
+    #operate a{
+        cursor:pointer
+    }
+    #operate a:hover{
+        color: #009688;
+    }
+    .layui-btn{
+        margin-top: 10px;
+    }
+</style>
+
+<form class="layui-form seller-alone-form"> <!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
+
+    <input type="hidden" name="id" value="{$info.id}">
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>店铺名称：</label>
+        <div class="layui-input-inline seller-inline-4">
+            <input type="text" name="name" value="{$info.name}" lay-verify="required" placeholder="请输入店铺名称" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color">*</i>店铺描述：</label>
+        <div class="layui-input-inline seller-inline-4">
+            <input type="text" name="info" value="{$info.info}" lay-verify="required" placeholder="请输入店铺描述" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item" style="display: none">
+        <label class="layui-form-label"><i class="required-color">*</i>联系人：</label>
+        <div class="layui-input-inline seller-inline-4">
+            <input type="text" name="linkman" value="{$info.linkman}" lay-verify="required" placeholder="请输入联系人名称" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">店铺图片：</label>
+        <div class="layui-upload" id="imgs">
+            <button type="button" class="layui-btn" id="shop_img" onclick="upImage()">上传图片</button>
+            <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;">
+                <p>预览图：[第一张图片为默认图，可拖动图片进行排序]</p>
+                <div class="layui-upload-list" id="img_preview">
+                    {volist name="info['images']" id="image"}
+                    <div class="imgdiv">
+                        <img src="{$image.image_path}"  class="layui-upload-img" style="width: 100px;height:100px;">
+                        <div id="operate">
+                            <div><a class="del" onclick="delImg(this,'{$image.image_id}')">删除</a>|<a class="setmain" onclick="setDefault(this,'{$image.image_id}')">设为主图</a>|<a class="croppic" data-id="{$image.image_id}" onclick="croppic(this,'{$image.image_path }')">裁剪</a></div>
+                        </div>
+                        <input type='hidden' name='shop[img][]' value="{$image.image_id}">
+                    </div>
+                    {/volist}
+                </div>
+            </blockquote>
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color"></i>详细地址：</label>
+        <div class="layui-input-inline seller-inline-6">
+            <input type="text" name="address" value="{$info.address}" lay-verify="required" placeholder="请输入店铺详细地址" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <label class="layui-form-label"><i class="required-color"></i>店铺坐标：</label>
+        <div class="layui-input-inline seller-inline-6">
+            <input type="text" id="coordinate" name="coordinate" value="{$info.coordinate}" readonly="readonly" onclick="show_map();" lay-verify="required" placeholder="请选择坐标" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+    <div class="layui-form-item">
+        <div class="layui-input-block">
+            {:jshopToken()}
+            <button type="button" class="layui-btn" lay-submit lay-filter="add-store">保存</button>
+            <button type="button" onclick="javascript:history.back(-1);" class="layui-btn layui-btn-primary">取消</button>
+        </div>
+    </div>
+    <!-- 更多表单结构排版请移步文档左侧【页面元素-表单】一项阅览 -->
+</form>
+<script id="image_tpl" type="text/html">
+    {{# layui.each(d, function(index, item){  }}
+    <div class="imgdiv">
+        <img src="{{ item.src }}"  class="layui-upload-img" style="width: 100px;height:100px;">
+        <div id="operate">
+            <div><a class="del" onclick="delImg(this,'{{ item.image_id }}')">删除</a>|<a class="setmain" onclick="setDefault(this,'{{ item.image_id }}')">设为主图</a>|<a class="croppic" data-id="{{ item.image_id }}" onclick="croppic(this,'{{ item.src }}')">裁剪</a></div>
+        </div>
+        <input type='hidden' name='shop[img][]' value="{{ item.image_id }}">
+    </div>
+    {{#  }); }}
+</script>
+<script>
+    var laytpl = '';
+    layui.use(['form','laytpl','upload'], function(){
+        var $ = layui.jquery
+            ,upload = layui.upload;
+        var form = layui.form;
+        laytpl = layui.laytpl;
+
+        form.render();
+        //各种基于事件的操作，下面会有进一步介绍
+
+        form.on('submit(add-store)', function(data){
+            JsPost("{:url('setting/index')}",data.field,function(res){
+                if(res.status){
+                    layer.msg(res.msg, {time:1300},function(){
+                        window.location.href = "{:url('setting/index')}";
+                    });
+                }else{
+                    layer.msg(res.msg);
+                }
+            });
+        });
+    });
+
+    function show_map()
+    {
+        layer.open({
+            type: 2,
+            title: '选择门店位置',
+            area: ['800px', '650px'],
+            content: "{:url('Store/showMap')}?coordinate={$info.coordinate}"
+        });
+    }
+    var _editor = UE.getEditor("edit_image",{
+        initialFrameWidth:800,
+        initialFrameHeight:300,
+    });
+    _editor.ready(function (){
+        _editor.hide();
+        _editor.addListener('beforeInsertImage',function(t,arg){
+            var obj = _editor.queryCommandValue("serverparam");
+            if(obj.type == "shop"){
+                console.log(arg.length);
+                if(arg.length>5){
+                    layer.msg("最多只能选择5张图片，请重新选择");
+                    return false;
+                }
+                var getTpl = image_tpl.innerHTML
+                    ,view = document.getElementById('img_preview');
+                var oldHtml = $("#img_preview").html();
+                if(arg.length>0) {
+                    laytpl(getTpl).render(arg, function (html) {
+                        view.innerHTML = oldHtml+html;
+                    });
+                }else{
+                    layer.msg("请先上传图片");
+                    return false;
+                }
+            }
+            return true;
+        });
+    });
+    //上传dialog
+    function upImage(){
+        var obj = _editor.queryCommandValue("serverparam");
+        obj.type = "shop";
+        var myImage = _editor.getDialog("insertimage");
+        myImage.open();
+    }
+    /**
+     * 删除图片
+     * @param obj
+     * @param imageId
+     */
+    function delImg(obj,imageId) {
+        var imgDiv = $(obj).parent().parent().parent();
+        imgDiv.remove();
+    }
+    /**
+     * 设为默认图
+     * @param obj
+     * @param imageId
+     */
+    function setDefault(obj,imageId) {
+        var imgDiv = $(obj).parent().parent().parent();
+        $("#img_preview").prepend(imgDiv);
+    }
+    function croppic(obj, image_src) {
+        var image = $(obj).parent().parent().parent();
+        var croppicContainerModalOptions = {
+            cropUrl: "{:url('images/cropper')}",
+            loadPicture: image_src,
+            modal: true,
+            cropZoomWidth: 300,
+            cropZoomHeight: 300,
+            imgEyecandyOpacity: 0.4,
+            loaderHtml: '<div class="loader bubblingG"><span id="bubblingG_1"></span><span id="bubblingG_2"></span><span id="bubblingG_3"></span></div> ',
+            onAfterImgCrop: function (res) {
+                if (res.status == 'success') {
+                    image.replaceWith(res.image_html);
+                    layer.msg("裁剪成功");
+                } else {
+                    layer.msg(res.msg);
+                }
+                return true;
+            },
+            onError: function (errormessage) {
+                layer.msg('onError:' + errormessage);
+            }
+        };
+        var cropContainerModal = new Croppic('croppic', croppicContainerModalOptions);
+    }
+</script>
+<textarea id="edit_image" style="display: none;"></textarea>
